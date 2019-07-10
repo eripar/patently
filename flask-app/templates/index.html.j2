@@ -1,0 +1,76 @@
+
+{% extends "layout.html.j2" %}
+{% from "macros/table_format.html.j2" import format_cell %}
+{% block title %} Patent:ly {% endblock %}
+
+{% block body %}
+<div align="right"><p><a href=https://www.linkedin.com/in/erikaparra>Contact the Developer</a></p></div>
+
+<h1>Patent:ly | simplifying patent research</h1>
+<h4>Find patents with similar abstracts in the electrochemical field (dataset contains 12,215 patents granted between 1976-2016).</h4>
+<br>
+
+<h5>Use your own abstract, title, or keywords or submit the sample abstract below. </h5>
+
+<style> 
+        textarea {
+        width: 100%;
+        height: 200px;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        font-size: 16px;
+        resize: none;
+                }
+</style>
+<form action="{{url_for('analyze')}}" method="POST", id="myForm">
+<textarea name="rawtext">
+A zinc negative electrode for alkaline accumulators and method of making same. The zinc and/or zinc compounds are electrochemically deposited upon a current-collection grid in the presence of substances forming low-solubility zincates upon the discharge of the plate. Preferably the substances include calcium and magnesium compounds forming the corresponding zincates substantially immediately upon solubilization of the zinc in the alkaline electrolyte.</textarea>
+
+<p>Number of results:
+
+<select name="result_count">
+  <option value="20">20</option>
+  <option value="50">50</option>
+  <option value="100">100</option>
+  <option value="250">250</option>
+  <option value="500">500</option>
+  <option value="1000">1000</option>
+</select>
+
+<br>
+<button type="submit" name="submit">Submit</button>
+</form>
+<br>
+
+<center><h3>RESULTS OF THE ANALYSIS</h3></center>
+<br>
+<p><u><b>YOUR ENTRY: </b></u> 
+<br> {{ received_text }}</p>
+
+<p><u><b>THE TOKENS EXTRACTED: </b></u> 
+<br> {{ text_tokens }} </p>
+
+<p><u><b>THE MOST SIMILAR PATENTS:</b></u><br> 
+
+<table>
+            
+    {% for t in table %}
+        <tr>
+        <p> <b>{{ t['title'] }} </b>, {{ t['year'] }}, Similarity = {{ '%0.3f' |format( t['similarity'] | float ) }}
+        <br>{{ t['abstract'] }}
+        <br><a href={{ t['url'] }}> US{{ t['patent_id'] }}</a>, Class(es)/Subclass(es): {{ t['subclass_id'] }}, 
+        <a href=https://www.uspto.gov/web/patents/classification/selectnumwithtitle.htm>USPTO Class Schedule</a>
+        </p>
+        </tr>
+    {% endfor %}
+         
+</table>
+
+<h1><br></h1>
+
+<center><script type="text/javascript" src="//counter.websiteout.net/js/5/0/24/0"></script></center>
+
+{% endblock %}

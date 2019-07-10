@@ -1,0 +1,13 @@
+{% macro format_cell(header, row) %}
+    {% set color = '' %}
+    {% if header == 'title' %}
+        {% if row[header] >= 300 %}
+            {% set color = 'red' %}
+        {% elif row[header] >= 500 and row[header] < 1000%}
+            {% set color = 'yellow' %}
+        {% else %}
+            {% set color = 'green' %}
+        {% endif %}
+    {% endif %}
+
+{% endmacro %}
