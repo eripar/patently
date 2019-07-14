@@ -1,16 +1,21 @@
 
 {% extends "layout.html.j2" %}
-{% from "macros/table_format.html.j2" import format_cell %}
 {% block title %} Patent:ly {% endblock %}
 
 {% block body %}
-<div align="right"><p><a href=https://www.linkedin.com/in/erikaparra>Contact the Developer</a></p></div>
+
+<div class="navbar">
+  <a href="/">Home</a>
+  <a href="https://www.surveymonkey.com/r/P7MV6G6">Improve this Site</a>
+  <a href=https://www.linkedin.com/in/erikaparra>Contact</a>
+</div>
+<hr>
 
 <h1>Patent:ly | simplifying patent research</h1>
 <h4>Find patents with similar abstracts in the electrochemical field (dataset contains 12,215 patents granted between 1976-2016).</h4>
-<br>
+<hr>
 
-<h5>Use your own abstract, title, or keywords or submit the sample abstract below. </h5>
+<h5>To search Use your own abstract, title, or keywords or submit the sample abstract below. </h5>
 
 <style> 
         textarea {
@@ -25,10 +30,11 @@
         resize: none;
                 }
 </style>
+
 <form action="{{url_for('analyze')}}" method="POST", id="myForm">
 <textarea name="rawtext">
-A zinc negative electrode for alkaline accumulators and method of making same. The zinc and/or zinc compounds are electrochemically deposited upon a current-collection grid in the presence of substances forming low-solubility zincates upon the discharge of the plate. Preferably the substances include calcium and magnesium compounds forming the corresponding zincates substantially immediately upon solubilization of the zinc in the alkaline electrolyte.</textarea>
-
+A zinc negative electrode for alkaline accumulators and method of making same. The zinc and/or zinc compounds are electrochemically deposited upon a current-collection grid in the presence of substances forming low-solubility zincates upon the discharge of the plate.
+</textarea>
 <p>Number of results:
 
 <select name="result_count">
@@ -41,35 +47,15 @@ A zinc negative electrode for alkaline accumulators and method of making same. T
 </select>
 
 <br>
-<button type="submit" name="submit">Submit</button>
+<button type="submit" name="submit_search">Submit</button>
 </form>
+
+<p>
+<a href=https://patents.google.com/?q=zinc%2c&q=negative%2c+electrode%2c&q=alkaline%2c&q=accumulator%2c&q=zinc%2c&q=zinc%2c&q=deposit%2c&q=current%2c&q=collection%2c&q=grid%2c&q=presence%2c&q=substance%2c&q=low%2c&q=solubility%2c&q=zincates%2c&q=discharge%2c&q=plate&country=US>Google Patents Results for the Sample Abstract Keywords</a>
 <br>
-
-<center><h3>RESULTS OF THE ANALYSIS</h3></center>
-<br>
-<p><u><b>YOUR ENTRY: </b></u> 
-<br> {{ received_text }}</p>
-
-<p><u><b>THE TOKENS EXTRACTED: </b></u> 
-<br> {{ text_tokens }} </p>
-
-<p><u><b>THE MOST SIMILAR PATENTS:</b></u><br> 
-
-<table>
-            
-    {% for t in table %}
-        <tr>
-        <p> <b>{{ t['title'] }} </b>, {{ t['year'] }}, Similarity = {{ '%0.3f' |format( t['similarity'] | float ) }}
-        <br>{{ t['abstract'] }}
-        <br><a href={{ t['url'] }}> US{{ t['patent_id'] }}</a>, Class(es)/Subclass(es): {{ t['subclass_id'] }}, 
-        <a href=https://www.uspto.gov/web/patents/classification/selectnumwithtitle.htm>USPTO Class Schedule</a>
-        </p>
-        </tr>
-    {% endfor %}
-         
-</table>
-
-<h1><br></h1>
+<a href=https://www.uspto.gov/web/patents/classification/selectnumwithtitle.htm>Link to the USPTO Class Schedule</a>
+</p>
+<hr>
 
 <center><script type="text/javascript" src="//counter.websiteout.net/js/5/0/24/0"></script></center>
 

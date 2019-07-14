@@ -1,0 +1,87 @@
+
+{% extends "layout.html.j2" %}
+{% block title %} Patent:ly {% endblock %}
+
+{% block body %}
+
+<div class="navbar">
+  <a href="/">Home</a>
+  <a href="https://www.surveymonkey.com/r/P7MV6G6">Improve this Site</a>
+  <a href=https://www.linkedin.com/in/erikaparra>Contact</a>
+</div>
+<hr>
+
+<h1>Patent:ly | simplifying patent research</h1>
+<h4>Find patents with similar abstracts in the electrochemical field (dataset contains 12,215 patents granted between 1976-2016).</h4>
+<hr>
+
+<h5>To search Use your own abstract, title, or keywords or submit the sample abstract below. </h5>
+
+<style> 
+        textarea {
+        width: 100%;
+        height: 200px;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        font-size: 16px;
+        resize: none;
+                }
+</style>
+
+<form action="{{url_for('analyze')}}" method="POST", id="myForm">
+<textarea name="rawtext"> {{ received_text }} </textarea>
+<p>Number of results:
+
+<select name="result_count">
+  <option value="20">20</option>
+  <option value="50">50</option>
+  <option value="100">100</option>
+  <option value="250">250</option>
+  <option value="500">500</option>
+  <option value="1000">1000</option>
+</select>
+
+<br>
+<button type="submit" name="submit_search">Submit</button>
+</form>
+
+
+<p>
+<a href=https://patents.google.com/?q=zinc%2c&q=negative%2c+electrode%2c&q=alkaline%2c&q=accumulator%2c&q=zinc%2c&q=zinc%2c&q=deposit%2c&q=current%2c&q=collection%2c&q=grid%2c&q=presence%2c&q=substance%2c&q=low%2c&q=solubility%2c&q=zincates%2c&q=discharge%2c&q=plate&country=US>Google Patents Results for the Sample Abstract Keywords</a>
+<br>
+<a href=https://www.uspto.gov/web/patents/classification/selectnumwithtitle.htm>Link to the USPTO Class Schedule</a>
+</p>
+<hr>
+
+<center><h3>RESULTS OF THE Patent:ly ANALYSIS</h3></center>
+<br>
+<p><u><b>YOUR ENTRY: </b></u> 
+<br> {{ received_text }}</p>
+
+<p><u><b>THE TOKENS EXTRACTED: </b></u> 
+<br> {{ text_tokens }} </p>
+
+
+<p><u><b>THE MOST SIMILAR PATENTS:</b></u><br> 
+
+<table>
+            
+    {% for t in table %}
+        <tr>
+        <p> <b>{{ t['title'] }} </b>, {{ t['year'] }}, Similarity = {{ '%0.3f' |format( t['similarity'] | float ) }}
+        <br>{{ t['abstract'] }}
+        <br><a href={{ t['url'] }}> US{{ t['patent_id'] }}</a>, Class(es)/Subclass(es): {{ t['subclass_id'] }}
+        </p>
+        </tr>
+    {% endfor %}
+         
+</table>
+
+<h1><br></h1>
+
+<center><script type="text/javascript" src="//counter.websiteout.net/js/5/0/24/0"></script></center>
+
+{% endblock %}
