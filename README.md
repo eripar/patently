@@ -22,10 +22,7 @@ App run file:
 patently/flask-app/app.py
 
 Development Jupyter file:
-patently-development.ipynb
-
-Subset of patent dataset:
-patently/flask-app/data/export_patents_view_main_tokenized_v2.csv
+patently-development.ipynb (to be added shortly)
 
 
 ## Development
