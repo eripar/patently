@@ -1,19 +1,15 @@
+""" Front-end for Patent:ly (patent search application)."""
+""" Visit http://www.patentlyapp.com to try it out. """
 
-# Import Flask and pandas
+import datetime
+import string
+
 from flask import Flask, render_template, request
 import pandas as pd
-import datetime
-
-# Import sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-
-# Import spaCy for NLP
 import spacy
-import string
 from spacy.lang.en import English
-from nltk.stem.porter import *
-stemmer = PorterStemmer()
 
 # Load the spaCy english library, punctuations, and stopwords
 nlp = spacy.load('en_core_web_sm')
@@ -22,20 +18,34 @@ parser = English()
 # Define the stop-words to filter
 stop_words = spacy.lang.en.stop_words.STOP_WORDS
 # add a shortlist of patent stop-words
-nlp.Defaults.stop_words |= {"electrochemical","electrochemistry","use","comprise", "invention","composition",\
-                            "form","include","active","method","compound","group","high","present","provide",\
-                            "produce","contain"}
+nlp.Defaults.stop_words |= {
+        "electrochemical",
+        "electrochemistry",
+        "use",
+        "comprise", 
+        "invention",
+        "composition",
+        "form",
+        "include",
+        "active",
+        "method",
+        "compound",
+        "group",
+        "high",
+        "present",
+        "provide",
+        "produce",
+        "contain"
+}
 
 # Read the patent dataset
 df_user_search= pd.read_csv("data/user_search.csv",)
 df = pd.read_csv("data/export_patent_view_main_tokenized_v2.csv",)
-df_descriptions= pd.read_csv("data/class_descriptions.csv",)
-copy_df = df
 
 # Define the TFIDF vectorizer
 vectorizer=TfidfVectorizer(ngram_range=(1,3))
 # Imported dataset contains the patent abstracts pre-processed (using spacy_tokenizer function below) into tokens as a column.  Use that column as the features.
-docs = copy_df['tokens']
+docs = df['tokens']
 bag = vectorizer.fit_transform(docs)
 length = len(docs)
 
@@ -43,6 +53,19 @@ app = Flask(__name__)
 
 # Function to process the user's input into tokens that can be compared against the tokenized patent abstract data
 def spacy_tokenizer(docs):  
+    """Process the user's input into tokens.
+    
+    Process user input into tokens that can be compared against
+    the tokenized patent abstract data
+    
+    Args:
+        user_doc (str): The string of user input to tokenize
+    
+    Returns:
+        Tuple[pandas.Series, pandas.Series]: Tuple with two Series:
+            1. Series of outgoing tokens
+            2. Series of tokens to print
+    """
     mytokens = []
     mytokens_out = []
     print_tokens = []
@@ -55,7 +78,14 @@ def spacy_tokenizer(docs):
     mytokens = nlp( str( mytokens )) 
     for word in mytokens: 
         #remove verbs, punctuation, conjunctions, adverbs, numbers, and undefined parts-of-speech
-        mytoken = (word.pos_!='VERB') & (word.pos_!='PUNCT') & (word.pos_!='CCONJ') & (word.pos_!='ADV') & (word.pos_!='NUM') & (word.pos_!='X')
+        mytoken = (
+                (word.pos_!='VERB') 
+                & (word.pos_!='PUNCT') 
+                & (word.pos_!='CCONJ') 
+                & (word.pos_!='ADV') 
+                & (word.pos_!='NUM') 
+                & (word.pos_!='X')
+        )
         if mytoken:
             print_tokens.append(word)
             #stem
@@ -104,13 +134,28 @@ def analyze():
         copy_df['similarity'] = cosine_similarities
         
         #extract the top n to be returned to the index.html
-        out_df = copy_df.iloc[list(related_docs_indices)][['title', 'abstract','patent_id', 'similarity', 'year','subclass_id','url']]
+        out_df = copy_df.iloc[list(related_docs_indices)][
+            [
+                'title', 
+                'abstract',
+                'patent_id', 
+                'similarity', 
+                'year',
+                'subclass_id',
+                'url'
+            ]
+        ]
         #reset the indeces for the returned data
         out_df = out_df.reset_index()
         #convert dataframe into dictionary
         out_df = out_df.to_dict('records')
         
-    return render_template('analyze.html.j2', received_text=rawtext, text_tokens=print_tokens[:], table=out_df )
+    return render_template(
+            'analyze.html.j2', 
+            received_text=rawtext, 
+            text_tokens=print_tokens[:], 
+            table=out_df 
+    )
 
 #https://www.websiteout.net/counter.php
 
